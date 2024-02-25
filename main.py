@@ -3,6 +3,7 @@ import sqlite3
 from flask import Flask, request, jsonify
 from typing import Dict
 import json
+import pygeohash
 
 app = Flask(__name__)
 DATABASE_NAME = 'webhook_data.db'
@@ -51,6 +52,15 @@ def handle_webhook(data: Dict[str, any]) -> None:
 
     if data:
         event_type = data.get("type")
+        location = data.get("location")
+
+        if location:
+            if location.get("type").lower() == "point":
+                coordinates = location.get("coordinates")
+                lat, lon = coordinates.get("latitude"), coordinates.get("longitude")
+                geohash = pygeohash.encode(float(lat), float(lon))
+                location.update({"geohash": geohash})
+
         json_string = json.dumps(data)
 
         if event_type.lower() == "user.entered_geofence":
@@ -65,8 +75,8 @@ def handle_webhook(data: Dict[str, any]) -> None:
         # with a tradeoff i.e. a bit more compute resources are utilized in the data warehouse
         # although transforming data in lamda/serverless will also utilize compute capacity
 
-        # POV: Clang is faster than python, databases are written in C and will process data
-        #      quicker than python ever will even with Cython.
+        # POV: Clang is faster than python, therefore databases(e.g. postgres) are written in C and
+        #      will process data quicker than python ever will even with Cython.
 
         # snowflake connection can also be configured here instead of sqlite.
         with sqlite3.connect(DATABASE_NAME) as conn:

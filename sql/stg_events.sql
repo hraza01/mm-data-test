@@ -1,5 +1,5 @@
-create table if not exists stg_events
-    as
+drop table stg_events;
+create table stg_events as
 
 with raw as (
 

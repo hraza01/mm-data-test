@@ -9,7 +9,7 @@ readme = "README.md"
 python = "^3.8"
 Flask = "^2.3.2"
 requests = "^2.31.0"
-
+pygeohash = "^1.2.0"
 
 [build-system]
 requires = ["poetry-core"]

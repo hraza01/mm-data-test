@@ -7,6 +7,7 @@ with transformations as (
          , json_extract(location, '$.type') as location_type
          , json_extract(location, '$.coordinates.latitude') as location_latitude
          , json_extract(location, '$.coordinates.longitude') as location_longitude
+         , json_extract(location, '$.geohash') as location_geohash
          , json_extract(trip, '$.metadata.route_session_type') as trip_route_session_type
       from stg_events
      order by type
@@ -19,4 +20,5 @@ select distinct
      , location_type
      , location_latitude
      , location_longitude
+     , location_geohash
   from transformations
